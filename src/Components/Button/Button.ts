@@ -1,4 +1,4 @@
-import Component from "../../Framework/Component/Component";
+import { Component } from "../../Framework";
 
 interface iButton {
   name?: string,

@@ -1,5 +1,4 @@
-import Component from "../../Framework/Component/Component";
-import FrameworkRender from "../../Framework/Namespaces/render-namespace";
+import { Component, FrameworkRender } from "../../Framework";
 import doReducer from "./doReducer";
 import Button from "../Button/Button";
 import Input from "../Input/Input";

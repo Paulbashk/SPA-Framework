@@ -1,5 +1,6 @@
 import FrameworkRender from "./Namespaces/render-namespace";
 import Render from './Render/Render';
+import Component from './Component/Component';
 
 declare global {
   interface Window {
@@ -22,13 +23,18 @@ window.framework = {
 function Framework(rootElement: HTMLElement): FrameworkRender.iFuncFramework {
   window.framework.Render = new Render(rootElement);
 
-  if(rootElement !== null) {
+  if(rootElement === null) {
     rootElement = document.body;
   }
 
   return {
     Render: window.framework.Render
   };
+}
+
+export {
+  FrameworkRender,
+  Component
 }
 
 export default Framework;
