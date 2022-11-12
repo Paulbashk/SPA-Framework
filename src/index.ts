@@ -1,6 +1,5 @@
-import Framework from "./Framework";
-import App from "./Components/App/App";
+import './index.css';
+import App from "./pages/app";
 
-const { Render } = Framework(document.getElementById('root')!);
-
-Render.create(App);
+const app = new App();
+app.run();
