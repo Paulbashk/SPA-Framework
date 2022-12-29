@@ -12,7 +12,14 @@ function componentUpdate(component: Component, prevState: FrameworkRender.tAnyOb
   if(Object.keys(prevState).some(
     key => prevState[key] !== component.state[key]
   )) {
-    virtualDOM.update = component.render();
+
+    const render = component.render();
+    const App = virtualDOM.get;
+    const AppChildren = App.children;
+    const filteredComponents = AppChildren?.filter((component: FrameworkRender.tAnyObject) => component.key !== render.key);
+    
+    virtualDOM.update = {...App, children: [render, ...filteredComponents].sort((a, b) => a.key - b.key)};
+
 
     if(window.framework.Render) {
       window.framework.Render.convertVirtualDOMAndUpdateDOM(virtualDOM.get);
@@ -35,18 +42,16 @@ abstract class Component {
   /* Инициализация хранилища для приходящих данных из родительского компонента */
   public props: Partial<FrameworkRender.tAnyObject> = {};
   /* Инициализация переменной для функции componentUpdate */
-  public updater: Function;
+  public updater: any;
   /* Инициализация хранилища для состояний текущего компонента */
-  public state: FrameworkRender.tAnyObject = {};
+  //public state: Partial<FrameworkRender.tAnyObject> = {};
 
   constructor(props: FrameworkRender.tAnyObject) {
     if(props) {
       this.props = props;
     }
 
-    this.updater = componentUpdate;
-
-    this._componentDidMount(this.state);
+    this.componentDidMount();
   }
 
   /**
@@ -57,6 +62,7 @@ abstract class Component {
   */
   public setState(newState: FrameworkRender.tAnyObject): void {
     const prevState = this.state;
+    this.updater = componentUpdate;
 
     this.state = typeof newState === 'function'
       ? newState(prevState)
@@ -76,24 +82,8 @@ abstract class Component {
 
   /**
   * Функция вызывается при первичном монтировании компонента
-  * 
-  * @param defaultState Начальное значение state при первичном рендеринге компонента
-  * 
   */  
-  public componentDidMount(defaultState: FrameworkRender.tAnyObject): void {}
-
-  /**
-  * Функция реализует монтирование компонента
-  * Инициализирует функцию render(), формируя virtual DOM object в локальную переменную innerObject
-  * 
-  * @param defaultState Начальное значение state при первичном рендеринге компонента
-  * 
-  */  
-  private _componentDidMount(defaultState: FrameworkRender.tAnyObject): void {
-    this.componentDidMount(defaultState);
-
-    this.innerObject = this.render();
-  }
+  public componentDidMount(): void {}
 
   /**
   * Функция инициализирует компонент и формирует virtual DOM object данного объекта. 
@@ -107,7 +97,7 @@ abstract class Component {
   */  
   public Component(component: FrameworkRender.tSignatureComponentProp, props: FrameworkRender.tAnyObject): FrameworkRender.IComponent {
     const instance: Component = new component(props);
-    const innerChildrenObject = instance.innerObject;
+    const innerChildrenObject = instance.render(this.state);
 
     if(innerChildrenObject.children && innerChildrenObject.children instanceof Component) {
       innerChildrenObject.children = innerChildrenObject.children.innerObject;
@@ -122,8 +112,7 @@ abstract class Component {
   * @return Возвращает virtual DOM object  
   * 
   */    
-  public render(): FrameworkRender.IComponent {
-
+  public render(state?: FrameworkRender.tAnyObject): FrameworkRender.IComponent {
     return {
       tagName: 'div'
     };

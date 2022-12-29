@@ -7,7 +7,7 @@ export enum doReducer {
   TURNDOWN = 'TURNDOWN'
 }
 
-class App extends Framework.Component implements ClassComponent {
+class Counter extends Framework.Component implements ClassComponent {
   constructor(props: ValueDefault) {
     super(props);
 
@@ -31,15 +31,18 @@ class App extends Framework.Component implements ClassComponent {
     }
   }
     
-  render() {
+  render(state: any) {
+    console.log(state);
+
     return {
+      key: this.props.key,
       tagName: 'div',
-      className: 'App',
+      className: `Counter ${this.props.key}`,
       children: [
         this.Component(Button, {
           name: 'Прибавить',
           typeReducer: doReducer.ADD,
-          state: this.state.value,
+          state: this.state,
           setState: this.setState.bind(this),
           reducerValue: this.reducerValue.bind(this)
         }),
@@ -50,13 +53,13 @@ class App extends Framework.Component implements ClassComponent {
         this.Component(Button, {
           name: 'Убавить',
           typeReducer: doReducer.TURNDOWN,
-          state: this.state.value,
+          state: this.state,
           setState: this.setState.bind(this),
           reducerValue: this.reducerValue.bind(this)
-        })
+        }),
       ]
     }
   }
 }
 
-export default App;
+export default Counter;

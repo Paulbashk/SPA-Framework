@@ -19,7 +19,7 @@ class Button extends Framework.Component implements ClassComponent {
     const actionCreators = { type: this.props.typeReducer, payload: Number(prompt('Введите значение')) };
 
     this.props.setState({ 
-      value: this.props.reducerValue(this.props.state, actionCreators)
+      value: this.props.reducerValue(this.props.state.value, actionCreators)
     });
   }
 
